@@ -102,3 +102,6 @@ ENV/
 
 # temporary folder
 tmp/
+
+# data folder
+dat/

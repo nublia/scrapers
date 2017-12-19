@@ -5,7 +5,7 @@ import unittest
 
 from unittest import mock
 
-import scrapers
+from scrapers import fipe
 
 
 # The method bellow will be used by the mock to replace requests.post
@@ -51,9 +51,9 @@ def mocked_requests_post(*args, **kwargs):
 class TestVariables(unittest.TestCase):
     def setUp(self):
         """Sets-up the test environment."""
-        self.table = scrapers.fipe.Table()
-        self.car_maker = scrapers.fipe.CarMaker(0, None, self.table)
-        self.car_model = scrapers.fipe.CarModel(0, None, self.car_maker)
+        self.table = fipe.Table()
+        self.car_maker = fipe.CarMaker(0, None, self.table)
+        self.car_model = fipe.CarModel(0, None, self.car_maker)
 
     def test_table(self):
         self.assertEqual(self.table.id, 218)
@@ -90,14 +90,14 @@ class TestVariables(unittest.TestCase):
 class TestFipe(unittest.TestCase):
     def setUp(self):
         """Sets-up the test environment."""
-        self.fipe = scrapers.Fipe()
-        self.expected_table = scrapers.fipe.Table(id=218, year=2017,
+        self.fipe = fipe.Fipe()
+        self.expected_table = fipe.Table(id=218, year=2017,
                                                   month='outubro')
-        self.expected_car_maker = scrapers.fipe.CarMaker(
+        self.expected_car_maker = fipe.CarMaker(
             id=1, name='Acura', table=self.expected_table, vehicle_type=1)
-        self.expected_car_model = scrapers.fipe.CarModel(
+        self.expected_car_model = fipe.CarModel(
             id=1986, name='19 16S/ RT 16V', maker=self.expected_car_maker)
-        self.expected_price = scrapers.fipe.CarPrice(2008, 1, price=22923.0,
+        self.expected_price = fipe.CarPrice(2008, 1, price=22923.0,
                                                      fipe_code='025128-3')
 
     # We patch 'requests.post' with our own method. The mock object is passed
@@ -109,7 +109,7 @@ class TestFipe(unittest.TestCase):
         tables = self.fipe.crawl_reference_tables()
         self.assertIsInstance(tables, list)
         self.assertEqual(len(tables), 1)
-        self.assertIsInstance(tables[0], scrapers.fipe.Table)
+        self.assertIsInstance(tables[0], fipe.Table)
         self.assertEqual(tables[0].id, self.expected_table.id)
         self.assertEqual(tables[0].year, self.expected_table.year)
         self.assertEqual(tables[0].month, self.expected_table.month)
@@ -121,7 +121,7 @@ class TestFipe(unittest.TestCase):
         makers = self.fipe.crawl_makers(table=self.expected_table)
         self.assertIsInstance(makers, list)
         self.assertEqual(len(makers), 1)
-        self.assertIsInstance(makers[0], scrapers.fipe.CarMaker)
+        self.assertIsInstance(makers[0], fipe.CarMaker)
         self.assertEqual(makers[0].id, self.expected_car_maker.id)
         self.assertEqual(makers[0].name, self.expected_car_maker.name)
         self.assertEqual(makers[0].table.id, self.expected_car_maker.table.id)
@@ -139,7 +139,7 @@ class TestFipe(unittest.TestCase):
         models = self.fipe.crawl_models(self.expected_car_maker)
         self.assertIsInstance(models, list)
         self.assertEqual(len(models), 1)
-        self.assertIsInstance(models[0], scrapers.fipe.CarModel)
+        self.assertIsInstance(models[0], fipe.CarModel)
         self.assertEqual(models[0].id, self.expected_car_model.id)
         self.assertEqual(models[0].name, self.expected_car_model.name)
 
@@ -151,7 +151,7 @@ class TestFipe(unittest.TestCase):
         self.assertIsInstance(self.expected_car_model.prices, list)
         self.assertEqual(len(self.expected_car_model.prices), 1)
         self.assertIsInstance(self.expected_car_model.prices[0],
-                              scrapers.fipe.CarPrice)
+                              fipe.CarPrice)
         self.assertEqual(self.expected_car_model.prices[0].build_year,
                          self.expected_price.build_year)
         self.assertEqual(self.expected_car_model.prices[0].fuel_type,
@@ -166,7 +166,7 @@ class TestFipe(unittest.TestCase):
         self.assertIsInstance(self.expected_car_model.prices, list)
         self.assertEqual(len(self.expected_car_model.prices), 1)
         self.assertIsInstance(self.expected_car_model.prices[0],
-                              scrapers.fipe.CarPrice)
+                              fipe.CarPrice)
         self.assertEqual(self.expected_car_model.prices[0].build_year,
                          self.expected_price.build_year)
         self.assertEqual(self.expected_car_model.prices[0].fuel_type,
